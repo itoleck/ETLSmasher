@@ -19,3 +19,7 @@ ETLSmasher.exe --infile:"z:\temp\cpufreq.etl" --outfile:"z:\temp\cpufreq_compres
 - Only compress a trace.
 
 ETLSmasher.exe --infile:"z:\temp\cpufreq.etl" --outfile:"z:\temp\cpufreq_compressed.etl" --compress:true
+
+## To find the ETW event provider guids in a trace use WPA.exe.
+
+![Alt text](ETLSmasher.png)
