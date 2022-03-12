@@ -22,4 +22,4 @@ ETLSmasher.exe --infile:"z:\temp\cpufreq.etl" --outfile:"z:\temp\cpufreq_compres
 
 ## To find the ETW event provider guids in a trace use WPA.exe.
 
-![Alt text](ETLSmasher.png)
+![Alt text](ETLSmasher1.png)
