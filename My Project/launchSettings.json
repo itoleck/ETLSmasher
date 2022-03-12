@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ETLSmasher": {
+      "commandName": "Project",
+      "commandLineArgs": "--infile:\"z:\\temp\\cpufreq.etl\" --outfile:\"z:\\temp\\cpufreq_compressed.etl\" --compress:true --removeproviders:ed54dff8-c409-4cf6-bf83-05e1e61a09c4,68fdd900-4a3e-11d1-84f4-0000f80464e3,3d6fa8d3-fe05-11d0-9dda-00c04fd7ba7c --removetimeafter:10000"
+    }
+  }
+}
