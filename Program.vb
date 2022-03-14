@@ -89,8 +89,8 @@ Module Program
             For Each arg In args
                 If arg.StartsWith("--compress:") Then
                     Dim tf As String
-                    tf = arg.Trim(" ").Remove(0, 10).ToLower
-                    If tf = "true" Then
+                    tf = arg.Replace("'", "").Replace("""", "").Trim(" ").Remove(0, 10).ToLower
+                    If tf = "true" Or tf = "t" Or tf = "1" Then
                         compress = True
                     Else
                         compress = False
@@ -110,11 +110,15 @@ Module Program
             ShowHelp()
         End If
 
+        Console.ResetColor()
         Console.WriteLine("Saved: " + totalevents.ToString + " events")
 
     End Sub
 
     Private Sub RelogByCompressOnly()
+
+        Console.WriteLine("Compressing trace: " + infile)
+
         Using relogger As New ETWReloggerTraceEventSource(infile, TraceEventSourceType.FileOnly, outfile)
             relogger.OutputUsesCompressedFormat = compress
 
@@ -141,6 +145,9 @@ Module Program
     End Sub
 
     Private Sub Relog()
+
+        Console.WriteLine("Re-Logging trace: " + infile)
+
         Using relogger As New ETWReloggerTraceEventSource(infile, TraceEventSourceType.FileOnly, outfile)
             relogger.OutputUsesCompressedFormat = compress
 
@@ -197,7 +204,7 @@ Module Program
         Console.WriteLine("")
         Console.WriteLine("--infile:<ETLFILENAME>" + vbTab + "REQUIRED")
         Console.WriteLine("--outfile:<ETLFILENAME>" + vbTab + "REQUIRED")
-        Console.WriteLine("--compress:true")
+        Console.WriteLine("--compress:true or t or 1")
         Console.WriteLine("--removeproviders:<guid>,<guid>,<guid>")
         Console.WriteLine("--removetimeafter:<milliseconds to start removal of events>")
         Console.WriteLine("")

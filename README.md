@@ -2,6 +2,10 @@
 
 ## Compress, remove providers and remove events after a timeframe.
 
+* If the trace file does not compress either it is already compressed or the trace has missing buffers or events. Check for missing information by opening the trace in WPA.exe.
+
+![Missing Buffers and Events](etlsmasher_buff_events.png)
+
 ## Usage
 
 - Compress and remove events with provider ed54dff8-c409-4cf6-bf83-05e1e61a09c4(WinSATAssessment) and remove events after 60 seconds in the trace.
@@ -22,4 +26,4 @@
 
 ## To find the ETW event provider guids in a trace use WPA.exe.
 
-![Alt text](etlsmasher1.png)
+![ETLSmasher](etlsmasher1.png)
