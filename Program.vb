@@ -89,7 +89,7 @@ Module Program
             For Each arg In args
                 If arg.StartsWith("--compress:") Then
                     Dim tf As String
-                    tf = arg.Replace("'", "").Replace("""", "").Trim(" ").Remove(0, 10).ToLower
+                    tf = arg.Replace("'", "").Replace("""", "").Trim(" ").Remove(0, 11).ToLower
                     If tf = "true" Or tf = "t" Or tf = "1" Then
                         compress = True
                     Else
