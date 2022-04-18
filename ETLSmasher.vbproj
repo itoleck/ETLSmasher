@@ -4,6 +4,9 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>ETLSmasher</RootNamespace>
     <TargetFramework>net6.0</TargetFramework>
+    <Version>0.0.1</Version>
+    <Authors>Chad Schultz</Authors>
+    <RepositoryUrl>https://github.com/itoleck/ETLSmasher</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>

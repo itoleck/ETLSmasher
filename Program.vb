@@ -1,4 +1,5 @@
 Imports System
+Imports System.Reflection
 Imports Microsoft.Diagnostics.Tracing
 
 Module Program
@@ -51,6 +52,12 @@ Module Program
                     ShowHelp()
                     End
                 Case "/?"
+                    ShowHelp()
+                    End
+                Case "--version"
+                    ShowHelp()
+                    End
+                Case "-v"
                     ShowHelp()
                     End
             End Select
@@ -196,6 +203,8 @@ Module Program
 
     Private Sub ShowHelp()
         Console.ResetColor()
+        Console.WriteLine("")
+        Console.WriteLine("Version:" + Assembly.GetExecutingAssembly().GetName().Version.ToString)
         Console.WriteLine("")
         Console.WriteLine("Program will open and read a .etl trace and produce a smaller .etl file based on the options selected.")
         Console.WriteLine("")
