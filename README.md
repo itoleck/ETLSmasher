@@ -6,6 +6,8 @@
 
 - *Note: If the trace file otherwise does not compress, either it is already compressed or the trace has missing buffers or events. Check for missing information by opening the trace in WPA.exe.
 
+- *Note: If you would like to remove all kernel trace providers use the provider GUID 9e814aad-3204-11d2-9a82-006008a86939 or each kernel switch can be removed separately.
+
 ![Missing Buffers and Events](etlsmasher_buff_events.png)
 
 ## Usage
@@ -26,6 +28,6 @@
 
 `ETLSmasher.exe --infile:"z:\temp\cpufreq.etl" --outfile:"z:\temp\cpufreq_compressed.etl" --compress:true`
 
-## To find the ETW event provider guids in a trace use WPA.exe
+## To find the ETW event provider GUIDs in a trace use WPA.exe
 
 ![ETLSmasher](etlsmasher1.png)
