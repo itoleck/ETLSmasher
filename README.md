@@ -2,7 +2,9 @@
 
 ## Compress, remove providers and remove events after a timeframe
 
-- *Note: If the trace file does not compress, either it is already compressed or the trace has missing buffers or events. Check for missing information by opening the trace in WPA.exe.
+- *Note: Only ETW providers that can be parsed with the TraceEvent library will be compressed or removed.
+
+- *Note: If the trace file otherwise does not compress, either it is already compressed or the trace has missing buffers or events. Check for missing information by opening the trace in WPA.exe.
 
 ![Missing Buffers and Events](etlsmasher_buff_events.png)
 

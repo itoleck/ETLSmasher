@@ -1,8 +1,7 @@
 {
   "profiles": {
     "ETLSmasher": {
-      "commandName": "Project",
-      "commandLineArgs": "--infile:\"z:\\temp\\I9.04-14-2022.12-44-03.etl\" --outfile:\"z:\\temp\\I9.04-14-2022.12-44-03_compress.etl\" --compress:true"
+      "commandName": "Project"
     }
   }
 }

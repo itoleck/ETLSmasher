@@ -109,7 +109,11 @@ Module Program
                 RelogByCompressOnly()
             Else
                 If providers.Length > 0 Then
-                    Relog()
+                    If relogtime = -1 Then
+                        RelogProviders()
+                    Else
+                        RelogProvidersAndTime()
+                    End If
                 End If
             End If
 
@@ -129,19 +133,6 @@ Module Program
         Using relogger As New ETWReloggerTraceEventSource(infile, TraceEventSourceType.FileOnly, outfile)
             relogger.OutputUsesCompressedFormat = compress
 
-            'Keeping around so I remember the other evetns
-            'AddHandler relogger.Dynamic.All, Function(ByVal data As Microsoft.Diagnostics.Tracing.TraceEvent)
-            '                                     relogger.WriteEvent(data)
-            '                                 End Function
-
-            'AddHandler relogger.Kernel.All, Function(ByVal data As Microsoft.Diagnostics.Tracing.TraceEvent)
-            '                                    relogger.WriteEvent(data)
-            '                                End Function
-
-            'AddHandler relogger.Clr.All, Function(ByVal data As Microsoft.Diagnostics.Tracing.TraceEvent)
-            '                                 relogger.WriteEvent(data)
-            '                             End Function
-
             AddHandler relogger.AllEvents, Function(ByVal data As Microsoft.Diagnostics.Tracing.TraceEvent)
                                                relogger.WriteEvent(data)
                                                totalevents += 1
@@ -151,53 +142,210 @@ Module Program
         End Using
     End Sub
 
-    Private Sub Relog()
+    Private Sub RelogProviders()
 
         Console.WriteLine("Re-Logging trace: " + infile)
+        Console.WriteLine("Removing providers: " + providers.Length.ToString)
 
         Using relogger As New ETWReloggerTraceEventSource(infile, TraceEventSourceType.FileOnly, outfile)
             relogger.OutputUsesCompressedFormat = compress
 
-            AddHandler relogger.AllEvents, Function(ByVal data As Microsoft.Diagnostics.Tracing.TraceEvent)
+            AddHandler relogger.UnhandledEvents, Function(ByVal data As Microsoft.Diagnostics.Tracing.TraceEvent)
+                                                     Dim uid As String = data.TaskGuid.ToString.ToLower
+                                                     Dim uid2 As String = data.ProviderGuid.ToString.ToLower
+                                                     Dim idx As Int32 = Array.IndexOf(providers, uid)
+                                                     Dim idx2 As Int32 = Array.IndexOf(providers, uid2)
+                                                     Dim bidx As Boolean = True
+                                                     Dim bidx2 As Boolean = True
 
-                                               If relogtime = -1 Then
+                                                     If idx < 0 Then bidx = False
+                                                     If idx2 < 0 Then bidx2 = False
 
-                                                   Dim uid As String = data.TaskGuid.ToString.ToLower
-                                                   Dim idx As Int32 = Array.IndexOf(providers, uid)
+                                                     If bidx = True Or bidx2 = True Then
 
-                                                   If idx = -1 Then
-                                                       relogger.WriteEvent(data)
-                                                       totalevents += 1
-                                                   Else
-                                                       Debug.WriteLine(data.TaskGuid.ToString)
-                                                   End If
+                                                     Else
+                                                         relogger.WriteEvent(data)
+                                                         totalevents += 1
+                                                     End If
+                                                 End Function
 
-                                               Else
+            AddHandler relogger.Dynamic.All, Function(ByVal data As Microsoft.Diagnostics.Tracing.TraceEvent)
+                                                 Dim uid As String = data.TaskGuid.ToString.ToLower
+                                                 Dim uid2 As String = data.ProviderGuid.ToString.ToLower
+                                                 Dim idx As Int32 = Array.IndexOf(providers, uid)
+                                                 Dim idx2 As Int32 = Array.IndexOf(providers, uid2)
+                                                 Dim bidx As Boolean = True
+                                                 Dim bidx2 As Boolean = True
 
-                                                   'Some events may  be written at trace rundown, might be good to keep last few seconds. More inveestigation needed.
-                                                   'If (CType(data.TimeStampRelativeMSec, Int32) < relogtime) Or (data.TimeStampRelativeMSec > (data.Source.SessionEndTimeRelativeMSec - 10000))
+                                                 If idx < 0 Then bidx = False
+                                                 If idx2 < 0 Then bidx2 = False
 
-                                                   If (CType(data.TimeStampRelativeMSec, Int32) < relogtime) Then
+                                                 If bidx = True Or bidx2 = True Then
 
-                                                       Dim uid As String = data.TaskGuid.ToString.ToLower
-                                                       Dim idx As Int32 = Array.IndexOf(providers, uid)
+                                                 Else
+                                                     relogger.WriteEvent(data)
+                                                     totalevents += 1
+                                                 End If
+                                             End Function
 
-                                                       If idx = -1 Then
-                                                           relogger.WriteEvent(data)
-                                                           totalevents += 1
-                                                       Else
-                                                           Debug.WriteLine(data.TaskGuid.ToString)
-                                                       End If
+            AddHandler relogger.Kernel.All, Function(ByVal data As Microsoft.Diagnostics.Tracing.TraceEvent)
+                                                Dim uid As String = data.TaskGuid.ToString.ToLower
+                                                Dim uid2 As String = data.ProviderGuid.ToString.ToLower
+                                                Dim idx As Int32 = Array.IndexOf(providers, uid)
+                                                Dim idx2 As Int32 = Array.IndexOf(providers, uid2)
+                                                Dim bidx As Boolean = True
+                                                Dim bidx2 As Boolean = True
 
-                                                   Else
-                                                       Debug.WriteLine(data.ProviderName)
-                                                   End If
+                                                If idx < 0 Then bidx = False
+                                                If idx2 < 0 Then bidx2 = False
 
-                                               End If
+                                                If bidx = True Or bidx2 = True Then
 
-                                           End Function
+                                                Else
+                                                    relogger.WriteEvent(data)
+                                                    totalevents += 1
+                                                End If
+                                            End Function
+
+            AddHandler relogger.Clr.All, Function(ByVal data As Microsoft.Diagnostics.Tracing.TraceEvent)
+                                             Dim uid As String = data.TaskGuid.ToString.ToLower
+                                             Dim uid2 As String = data.ProviderGuid.ToString.ToLower
+                                             Dim idx As Int32 = Array.IndexOf(providers, uid)
+                                             Dim idx2 As Int32 = Array.IndexOf(providers, uid2)
+                                             Dim bidx As Boolean = True
+                                             Dim bidx2 As Boolean = True
+
+                                             If idx < 0 Then bidx = False
+                                             If idx2 < 0 Then bidx2 = False
+
+                                             If bidx = True Or bidx2 = True Then
+
+                                             Else
+                                                 relogger.WriteEvent(data)
+                                                 totalevents += 1
+                                             End If
+                                         End Function
 
             relogger.Process()
+
+        End Using
+
+    End Sub
+
+    Private Sub RelogProvidersAndTime()
+
+        Console.WriteLine("Re-Logging trace: " + infile)
+        Console.WriteLine("Removing providers: " + providers.Length.ToString)
+        Console.WriteLine("Removing time after: " + relogtime.ToString + "ms")
+
+        Using relogger As New ETWReloggerTraceEventSource(infile, TraceEventSourceType.FileOnly, outfile)
+            relogger.OutputUsesCompressedFormat = compress
+
+            'Some events may be written at trace rundown, might be good to keep last few seconds. More investigation needed.
+            'If (CType(data.TimeStampRelativeMSec, Int32) < relogtime) Or (data.TimeStampRelativeMSec > (data.Source.SessionEndTimeRelativeMSec - 10000))
+
+            AddHandler relogger.UnhandledEvents, Function(ByVal data As Microsoft.Diagnostics.Tracing.TraceEvent)
+
+                                                     If (CType(data.TimeStampRelativeMSec, Int32) < relogtime) Then
+
+                                                         Dim uid As String = data.TaskGuid.ToString.ToLower
+                                                         Dim uid2 As String = data.ProviderGuid.ToString.ToLower
+                                                         Dim idx As Int32 = Array.IndexOf(providers, uid)
+                                                         Dim idx2 As Int32 = Array.IndexOf(providers, uid2)
+                                                         Dim bidx As Boolean = True
+                                                         Dim bidx2 As Boolean = True
+
+                                                         If idx < 0 Then bidx = False
+                                                         If idx2 < 0 Then bidx2 = False
+
+                                                         If bidx = True Or bidx2 = True Then
+
+                                                         Else
+                                                             relogger.WriteEvent(data)
+                                                             totalevents += 1
+                                                         End If
+
+                                                     End If
+
+                                                 End Function
+
+            AddHandler relogger.Dynamic.All, Function(ByVal data As Microsoft.Diagnostics.Tracing.TraceEvent)
+
+                                                 If (CType(data.TimeStampRelativeMSec, Int32) < relogtime) Then
+
+                                                     Dim uid As String = data.TaskGuid.ToString.ToLower
+                                                     Dim uid2 As String = data.ProviderGuid.ToString.ToLower
+                                                     Dim idx As Int32 = Array.IndexOf(providers, uid)
+                                                     Dim idx2 As Int32 = Array.IndexOf(providers, uid2)
+                                                     Dim bidx As Boolean = True
+                                                     Dim bidx2 As Boolean = True
+
+                                                     If idx < 0 Then bidx = False
+                                                     If idx2 < 0 Then bidx2 = False
+
+                                                     If bidx = True Or bidx2 = True Then
+
+                                                     Else
+                                                         relogger.WriteEvent(data)
+                                                         totalevents += 1
+                                                     End If
+
+                                                 End If
+
+                                             End Function
+
+            AddHandler relogger.Kernel.All, Function(ByVal data As Microsoft.Diagnostics.Tracing.TraceEvent)
+
+                                                If (CType(data.TimeStampRelativeMSec, Int32) < relogtime) Then
+
+                                                    Dim uid As String = data.TaskGuid.ToString.ToLower
+                                                    Dim uid2 As String = data.ProviderGuid.ToString.ToLower
+                                                    Dim idx As Int32 = Array.IndexOf(providers, uid)
+                                                    Dim idx2 As Int32 = Array.IndexOf(providers, uid2)
+                                                    Dim bidx As Boolean = True
+                                                    Dim bidx2 As Boolean = True
+
+                                                    If idx < 0 Then bidx = False
+                                                    If idx2 < 0 Then bidx2 = False
+
+                                                    If bidx = True Or bidx2 = True Then
+
+                                                    Else
+                                                        relogger.WriteEvent(data)
+                                                        totalevents += 1
+                                                    End If
+
+                                                End If
+
+                                            End Function
+
+            AddHandler relogger.Clr.All, Function(ByVal data As Microsoft.Diagnostics.Tracing.TraceEvent)
+
+                                             If (CType(data.TimeStampRelativeMSec, Int32) < relogtime) Then
+
+                                                 Dim uid As String = data.TaskGuid.ToString.ToLower
+                                                 Dim uid2 As String = data.ProviderGuid.ToString.ToLower
+                                                 Dim idx As Int32 = Array.IndexOf(providers, uid)
+                                                 Dim idx2 As Int32 = Array.IndexOf(providers, uid2)
+                                                 Dim bidx As Boolean = True
+                                                 Dim bidx2 As Boolean = True
+
+                                                 If idx < 0 Then bidx = False
+                                                 If idx2 < 0 Then bidx2 = False
+
+                                                 If bidx = True Or bidx2 = True Then
+
+                                                 Else
+                                                     relogger.WriteEvent(data)
+                                                     totalevents += 1
+                                                 End If
+
+                                             End If
+
+                                         End Function
+
+            relogger.Process()
+
         End Using
     End Sub
 
